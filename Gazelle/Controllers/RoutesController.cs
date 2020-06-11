@@ -26,53 +26,90 @@ namespace Gazelle.Controllers
             _context = context;
         }
 
+        public class ComparisonDto
+        {
+            public int Value;
+            public string Company;
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Route>>> Get(string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
         {
             if (weight > 40)
             {
                 return NotFound();
-            } 
+            }
 
+            var cheapestCompaniesUsed = new List<string>();
             var cheapestRoute = await CalculateCheapestRoute(origin, destination, c =>
             {
-                var prices = new List<int>();
+                var prices = new List<ComparisonDto>();
                 var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", origin, destination, weight, length, height, depth, deliveryTypes);
                 var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", origin, destination, weight, length, height, depth, deliveryTypes);
 
                 if (eastIndia != null)
                 {
-                    prices.Add(eastIndia.Price);
+                    prices.Add(new ComparisonDto
+                    {
+                        Value = eastIndia.Price,
+                        Company = "East India"
+                    });
                 }
 
                 if (oceanic != null)
                 {
-                    prices.Add(oceanic.Price);
+                    prices.Add(new ComparisonDto
+                    {
+                        Value = oceanic.Price,
+                        Company = "Oceanic"
+                    });
                 }
-                prices.Add(c.Price);
 
-                return prices.Min();
+                prices.Add(new ComparisonDto
+                {
+                    Value = c.Price,
+                    Company = "Telstar"
+                });
+
+                var min = prices.Min(c => c.Value);
+                cheapestCompaniesUsed.Add(prices.First(c => c.Value == min).Company);
+                return min;
             });
 
+            var shortestCompaniesUsed = new List<string>();
             var shortestRoute = await CalculateShortestRoute(origin, destination, c =>
             {
-                var times = new List<int>();
+                var times = new List<ComparisonDto>();
                 var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", origin, destination, weight, length, height, depth, deliveryTypes);
                 var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", origin, destination, weight, length, height, depth, deliveryTypes);
 
-                if(eastIndia != null)
+                if (eastIndia != null)
                 {
-                    times.Add(eastIndia.Time);
-                }
-                
-                if(oceanic != null)
-                {
-                    times.Add(oceanic.Time);
+                    times.Add(new ComparisonDto
+                    {
+                        Value = eastIndia.Time,
+                        Company = "East India"
+                    });
                 }
 
-                times.Add(c.Time);
+                if (oceanic != null)
+                {
+                    times.Add(new ComparisonDto
+                    {
+                        Value = oceanic.Time,
+                        Company = "Oceanic"
+                    });
+                }
 
-                return times.Min();
+                times.Add(new ComparisonDto
+                {
+                    Value = c.Time,
+                    Company = "Telstar"
+                });
+
+                var min = times.Min(c => c.Value);
+                shortestCompaniesUsed.Add(times.First(c => c.Value == min).Company);
+                return min;
             });
 
             if (cheapestRoute == null || shortestRoute == null)
