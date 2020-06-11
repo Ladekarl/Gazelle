@@ -6,18 +6,12 @@
   </div>
 
   <div class="container">
-
     <div class="row">
       <div class="row">
-
       </div>
-      <h3> Udfyld pakke information </h3>
+      <h3 align="left"> Udfyld pakke information </h3>
 
-      <div class="col">
-      </div>
-      <div class="col">
-
-      </div>
+   
     </div>
 
 
@@ -33,38 +27,54 @@
         </div>
         <div class="col">
         </div>
+        <div class="col">
+        </div>
       </div>
     </form>
 
     <div class="container">
-      <label>
-        <input type="checkbox" id="recodedDeliveryCheckbox"> Er pakken rekommenderet?
-      </label>
+      <div class="row">
+        <div class="col">
+          Special leverance:
+        </div>
+      </div>
+      <div>
+        <div class="col">
+          <input type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
+        </div>
 
-      <label>
-        <input type="checkbox" id="Checkbox"> Er pakken rekommenderet?
-      </label>
-
-      <label>
-        <input type="checkbox" id="recodedDeliveryCheckbox"> Er pakken rekommenderet?
-      </label>
-
+        <div class="col">
+          <input type="checkbox" id="FragileCheckbox"> Skrøbelig
+        </div>
+        <div class="col">
+          <input type="checkbox" id="frozenCheckbox"> Frys
+        </div>
+        <div class="col">
+          <input type="checkbox" id="animalCheckbox"> Dyr
+        </div>
+      </div>
     </div>
-  </div>
+    </div>
 
   <div class="container">
     <form [formGroup]="form" (ngSubmit)="submit()">
 
       <div class="form-group">
         <label for="city">Fra by:</label>
-        <select formControlName="city" class="form-control">
-          <option ngFor="let city in cities" value="city">{{city}}</option>
+        <select ng-model="cities" formControlName="city" name="options" required>
+          <option *ngFor="let city of cities" [ngValue]="city">{{city}}</option>
+        </select>
+        <label for="city">Til by:</label>
+        <select ng-model="cities" formControlName="city" name="options" required>
+          <option *ngFor="let city of cities" [ngValue]="city">{{city}}</option>
         </select>
 
       </div>
     </form>
   </div>
+  <div>
+    <button (click)="showRoutes"> Vis ruter </button>
 
-  <app-salesman-route-list></app-salesman-route-list>
-
+  
+  </div>
 </div>

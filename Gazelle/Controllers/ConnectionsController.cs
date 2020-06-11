@@ -20,8 +20,8 @@ namespace Gazelle.Controllers
 
         public class ConnectionDto
         {
-            public double Price { get; set; }
-            public double Time { get; set; }
+            public int Price { get; set; }
+            public int Time { get; set; }
         }
 
         public ConnectionsController(GazelleContext context)
@@ -32,7 +32,7 @@ namespace Gazelle.Controllers
         [HttpGet]
         public async Task<ActionResult<ConnectionDto>> Get(string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
         {
-            if((weight > 40 && weight > 0) || string.IsNullOrEmpty(origin) || string.IsNullOrEmpty(destination))
+            if(weight > 40 || weight < 0 || string.IsNullOrEmpty(origin) || string.IsNullOrEmpty(destination))
             {
                 return NotFound();
             }
@@ -77,11 +77,13 @@ namespace Gazelle.Controllers
 
             var totalPriceAddition = sentTypes.Sum(x => x.Price);
 
-            return new ConnectionDto
+            var conn = new ConnectionDto
             {
                 Price = connection.Price + (connection.Price * (totalPriceAddition / 100)),
                 Time = connection.Time 
             };
+
+            return Ok(conn);
         }
     }
 }
