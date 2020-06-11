@@ -30,10 +30,10 @@ namespace Gazelle.Controllers
                 Price = 50,
                 Time = 500,
                 Company = "Telstar",
-                StartCity = new City { CityId = Guid.NewGuid(), CityName = "Dakar", Country = new Country { CountryId = 1, Conflict = false, Name = "Marokko" } },
+                StartCity = new City { CityId = 1, CityName = "Dakar", Country = new Country { CountryId = 1, Conflict = false, Name = "Marokko" } },
                 EndCity = new City
                 {
-                    CityId = Guid.NewGuid(),
+                    CityId = 1,
                     CityName = "Marakkesh",
                     Country = new Country { CountryId = 1, Conflict = false, Name = "Marokko" },
                 }

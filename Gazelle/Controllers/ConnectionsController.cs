@@ -22,28 +22,33 @@ namespace Gazelle.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Connection>> Get(string origin, string destination, int weight, int length, int height, int depth, string[] deliveryTypes)
+        public async Task<ActionResult<Connection>> Get(string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
         {
-            if(weight > 40)
+            if((weight > 40 && weight > 0) || string.IsNullOrEmpty(origin) || string.IsNullOrEmpty(destination))
             {
                 return NotFound();
             }
 
-            foreach(var deliveryType in deliveryTypes)
+            if(deliveryTypes != null)
             {
-                var substrings = deliveryType.Split("=");
-                var key = substrings[0];
-                var value = bool.Parse(substrings[1]);
+                var deliveryTypesArray = deliveryTypes.Split(',');
 
-                var knownDeliveryType = _deliveryTypes.FirstOrDefault(x => x == key);
-                if(knownDeliveryType == null)
+                foreach (var deliveryType in deliveryTypesArray)
                 {
-                    return NotFound();
-                }
+                    var substrings = deliveryType.Split("=");
+                    var key = substrings[0];
+                    var value = bool.Parse(substrings[1]);
 
-                if (value && !_supportedDeliveryTypes.Contains(knownDeliveryType))
-                {
-                    return NotFound();
+                    var knownDeliveryType = _deliveryTypes.FirstOrDefault(x => x == key);
+                    if (knownDeliveryType == null)
+                    {
+                        return NotFound();
+                    }
+
+                    if (value && !_supportedDeliveryTypes.Contains(knownDeliveryType))
+                    {
+                        return NotFound();
+                    }
                 }
             }
 
@@ -54,12 +59,12 @@ namespace Gazelle.Controllers
                 .Include(x => x.StartCity)
                 .Include(x => x.EndCity)
                 .FirstOrDefaultAsync(x =>
-                x.StartCity.CityName == fromCityInvariant &&
-                x.EndCity.CityName == toCityInvariant);
+                x.StartCity.CityName.ToLower() == fromCityInvariant &&
+                x.EndCity.CityName.ToLower() == toCityInvariant);
 
             if (connection == null)
             {
-                return Ok();
+                return NotFound();
             }
 
             return connection;

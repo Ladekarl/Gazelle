@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Gazelle.Migrations
 {
     [DbContext(typeof(GazelleContext))]
-    [Migration("20200611090424_InitialModel")]
-    partial class InitialModel
+    [Migration("20200611140554_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,9 +23,10 @@ namespace Gazelle.Migrations
 
             modelBuilder.Entity("Gazelle.Models.City", b =>
                 {
-                    b.Property<Guid>("CityId")
+                    b.Property<int>("CityId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CityName")
                         .HasColumnType("nvarchar(max)");
@@ -50,10 +51,16 @@ namespace Gazelle.Migrations
                     b.Property<string>("Company")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("EndCityCityId")
+                        .HasColumnType("int");
+
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<int?>("RouteId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StartCityCityId")
                         .HasColumnType("int");
 
                     b.Property<double>("Time")
@@ -61,7 +68,11 @@ namespace Gazelle.Migrations
 
                     b.HasKey("ConnectionId");
 
+                    b.HasIndex("EndCityCityId");
+
                     b.HasIndex("RouteId");
+
+                    b.HasIndex("StartCityCityId");
 
                     b.ToTable("Connections");
                 });
@@ -100,14 +111,14 @@ namespace Gazelle.Migrations
                     b.Property<double>("DriverId")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("EndCityCityId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("EndCityCityId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Length")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("StartCityCityId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("StartCityCityId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
@@ -178,9 +189,17 @@ namespace Gazelle.Migrations
 
             modelBuilder.Entity("Gazelle.Models.Connection", b =>
                 {
+                    b.HasOne("Gazelle.Models.City", "EndCity")
+                        .WithMany()
+                        .HasForeignKey("EndCityCityId");
+
                     b.HasOne("Gazelle.Models.Route", null)
                         .WithMany("Connections")
                         .HasForeignKey("RouteId");
+
+                    b.HasOne("Gazelle.Models.City", "StartCity")
+                        .WithMany()
+                        .HasForeignKey("StartCityCityId");
                 });
 
             modelBuilder.Entity("Gazelle.Models.Delivery", b =>

@@ -21,9 +21,10 @@ namespace Gazelle.Migrations
 
             modelBuilder.Entity("Gazelle.Models.City", b =>
                 {
-                    b.Property<Guid>("CityId")
+                    b.Property<int>("CityId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CityName")
                         .HasColumnType("nvarchar(max)");
@@ -48,8 +49,8 @@ namespace Gazelle.Migrations
                     b.Property<string>("Company")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("EndCityCityId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("EndCityCityId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Price")
                         .HasColumnType("float");
@@ -57,8 +58,8 @@ namespace Gazelle.Migrations
                     b.Property<int?>("RouteId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("StartCityCityId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("StartCityCityId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Time")
                         .HasColumnType("float");
@@ -108,14 +109,14 @@ namespace Gazelle.Migrations
                     b.Property<double>("DriverId")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("EndCityCityId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("EndCityCityId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Length")
                         .HasColumnType("float");
 
-                    b.Property<Guid?>("StartCityCityId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("StartCityCityId")
+                        .HasColumnType("int");
 
                     b.Property<double>("Weight")
                         .HasColumnType("float");
