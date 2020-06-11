@@ -20,8 +20,8 @@ namespace Gazelle.Controllers
 
         public class ConnectionDto
         {
-            public double Price { get; set; }
-            public double Time { get; set; }
+            public int Price { get; set; }
+            public int Time { get; set; }
         }
 
         public ConnectionsController(GazelleContext context)
