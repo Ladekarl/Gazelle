@@ -3,16 +3,16 @@
 <table class="table">
   <thead>
     <tr onclick="displayRuteDetails()">
-      <th class="th">Pakke Id</th>
+      <th class="th">Chauffør Id</th>
       <th class="th">Oprindelses by</th>
       <th class="th">Destinations by</th>
     </tr>
   </thead>
   <tbody>
-    <tr onclick="displayRuteDetails()" *ngFor="let delivery of deliveries">
-      <td>{{ delivery.parcelId }}</td>
-      <td>{{ delivery.originCity }}</td>
-      <td>{{ delivery.destinationCity }}</td>
+    <tr *ngFor="let delivery of deliveries">
+      <td>{{ delivery.driverId }}</td>
+      <td>{{ delivery.startCity.cityName }}</td>
+      <td>{{ delivery.endCity.cityName }}</td>
     </tr>
   </tbody>
 </table>
