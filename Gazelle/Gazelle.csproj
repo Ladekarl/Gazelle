@@ -24,9 +24,22 @@
 
   <ItemGroup>
     <!-- Don't publish the SPA source files, but do show them in the project files list -->
+    <Compile Remove="ClientApp\src\app\nav-menu\**" />
+    <Compile Remove="ClientApp\src\app\NewFolder\**" />
     <Content Remove="$(SpaRoot)**" />
+    <Content Remove="ClientApp\src\app\nav-menu\**" />
+    <Content Remove="ClientApp\src\app\NewFolder\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\nav-menu\**" />
+    <EmbeddedResource Remove="ClientApp\src\app\NewFolder\**" />
     <None Remove="$(SpaRoot)**" />
+    <None Remove="ClientApp\src\app\nav-menu\**" />
+    <None Remove="ClientApp\src\app\NewFolder\**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="ClientApp\src\app\nav-menu\htmlpage.html" />
+    <None Remove="ClientApp\src\app\nav-menu\nav-manu-chauffoer.component.html" />
   </ItemGroup>
 
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
