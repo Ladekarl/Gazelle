@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Gazelle.Models;
 using System;
+using System.Net.NetworkInformation;
+using System.Collections.Generic;
 
 namespace Gazelle.Controllers
 {
@@ -13,8 +15,14 @@ namespace Gazelle.Controllers
     {
         private readonly GazelleContext _context;
 
-        private readonly string[] _deliveryTypes = new string[] { "frozen", "fragile", "weapon", "recordedDelivery", "animal" };
-        private readonly string[] _supportedDeliveryTypes = new string[] { "frozen", "fragile", "recordedDelivery", "animal" };
+        private readonly string[] _deliveryTypes = new string[] { "frozen", "fragile", "weapon", "recordedDelivery", "animal", "war" };
+        private readonly string[] _supportedDeliveryTypes = new string[] { "frozen", "fragile", "recordedDelivery", "animal", "war" };
+
+        public class ConnectionDto
+        {
+            public double Price { get; set; }
+            public double Time { get; set; }
+        }
 
         public ConnectionsController(GazelleContext context)
         {
@@ -22,33 +30,33 @@ namespace Gazelle.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Connection>> Get(string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
+        public async Task<ActionResult<ConnectionDto>> Get(string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
         {
             if((weight > 40 && weight > 0) || string.IsNullOrEmpty(origin) || string.IsNullOrEmpty(destination))
             {
                 return NotFound();
             }
 
+            var sentTypes = new List<DeliveryType>();
             if(deliveryTypes != null)
             {
                 var deliveryTypesArray = deliveryTypes.Split(',');
 
                 foreach (var deliveryType in deliveryTypesArray)
                 {
-                    var substrings = deliveryType.Split("=");
-                    var key = substrings[0];
-                    var value = bool.Parse(substrings[1]);
-
-                    var knownDeliveryType = _deliveryTypes.FirstOrDefault(x => x == key);
+                    var knownDeliveryType = _deliveryTypes.FirstOrDefault(x => x == deliveryType);
                     if (knownDeliveryType == null)
                     {
                         return NotFound();
                     }
 
-                    if (value && !_supportedDeliveryTypes.Contains(knownDeliveryType))
+                    if (!_supportedDeliveryTypes.Contains(knownDeliveryType))
                     {
                         return NotFound();
                     }
+
+                    var dbType = _context.DeliveryTypes.First(x => x.Name == knownDeliveryType);
+                    sentTypes.Add(dbType);
                 }
             }
 
@@ -67,7 +75,13 @@ namespace Gazelle.Controllers
                 return NotFound();
             }
 
-            return connection;
+            var totalPriceAddition = sentTypes.Sum(x => x.Price);
+
+            return new ConnectionDto
+            {
+                Price = connection.Price + (connection.Price * (totalPriceAddition / 100)),
+                Time = connection.Time 
+            };
         }
     }
 }
