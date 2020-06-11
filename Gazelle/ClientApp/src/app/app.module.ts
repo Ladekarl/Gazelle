@@ -7,16 +7,24 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { NavMenuSalesmanComponent } from './nav-menu-salesman/nav-menu-salesman.component';
+import { NavMenuDriverComponent } from './nav-menu-driver/nav-menu-driver.component';
+import { DriverRouteDetailsComponent } from './driver-route-details/driver-route-details.component';
+import { DriverDeliveryListComponent } from './driver-delivery-list/driver-delivery-list.component';
+import { SalesmanRouteDetailsComponent } from './salesman-route-details/salesman-route-details.component';
+import { SalesmanRouteListComponent } from './salesman-route-list/salesman-route-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent
+    NavMenuSalesmanComponent,
+    NavMenuDriverComponent,
+    DriverRouteDetailsComponent,
+    DriverDeliveryListComponent,
+    SalesmanRouteDetailsComponent,
+    SalesmanRouteListComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -24,8 +32,10 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'salesman-route-list', component: SalesmanRouteListComponent },
+      { path: 'salesman-route-details', component: SalesmanRouteDetailsComponent },
+      { path: 'driver-delivery-list', component: DriverDeliveryListComponent },
+      { path: 'driver-route-details', component: DriverRouteDetailsComponent },
     ])
   ],
   providers: [],
