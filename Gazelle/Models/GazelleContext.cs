@@ -12,5 +12,11 @@ namespace Gazelle.Models
         { }
 
         public DbSet<City> Cities { get; set; }
+        public DbSet<Delivery> Deliveries { get; set; }
+        public DbSet<Country> Countries { get; set; }
+        public DbSet<Connection> Connections { get; set; }
+        public DbSet<DeliveryType> DeliveryTypes { get; set; }
+        public DbSet<Route> Routes { get; set; }
+
     }
 }

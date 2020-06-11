@@ -4,14 +4,16 @@ using Gazelle.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gazelle.Migrations
 {
     [DbContext(typeof(GazelleContext))]
-    partial class GazelleContextModelSnapshot : ModelSnapshot
+    [Migration("20200611090424_InitialModel")]
+    partial class InitialModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -48,28 +50,18 @@ namespace Gazelle.Migrations
                     b.Property<string>("Company")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("EndCityCityId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<double>("Price")
                         .HasColumnType("float");
 
                     b.Property<int?>("RouteId")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("StartCityCityId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<double>("Time")
                         .HasColumnType("float");
 
                     b.HasKey("ConnectionId");
 
-                    b.HasIndex("EndCityCityId");
-
                     b.HasIndex("RouteId");
-
-                    b.HasIndex("StartCityCityId");
 
                     b.ToTable("Connections");
                 });
@@ -186,17 +178,9 @@ namespace Gazelle.Migrations
 
             modelBuilder.Entity("Gazelle.Models.Connection", b =>
                 {
-                    b.HasOne("Gazelle.Models.City", "EndCity")
-                        .WithMany()
-                        .HasForeignKey("EndCityCityId");
-
                     b.HasOne("Gazelle.Models.Route", null)
                         .WithMany("Connections")
                         .HasForeignKey("RouteId");
-
-                    b.HasOne("Gazelle.Models.City", "StartCity")
-                        .WithMany()
-                        .HasForeignKey("StartCityCityId");
                 });
 
             modelBuilder.Entity("Gazelle.Models.Delivery", b =>
