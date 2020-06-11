@@ -12,7 +12,7 @@ export class DeliveryListService {
   }
 
   public getDeliveryList() {
-    return this.http.get(this.url).subscribe(result => result), error => console.error(error);
+    return this.http.get(this.url);//.subscribe(result => result), error => console.error(error);
   }
 }
 

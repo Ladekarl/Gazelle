@@ -10,8 +10,16 @@ export class DriverDeliveryListComponent implements OnInit{
 
   constructor(private deliveryListService: DeliveryListService) {}
 
-  public deliveries = this.deliveryListService.getDeliveryList();
+  deliveries: string[];
+
+  //public deliveries = this.deliveryListService.getDeliveryList();
+
+  public displayRuteDetails() {
+    alert("CLICKED!");
+  }
 
   ngOnInit() {
+    this.deliveryListService.getDeliveryList().subscribe(result => this.deliveries = result), error => console.error(error);;
+
   }
 }
