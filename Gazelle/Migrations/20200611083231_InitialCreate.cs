@@ -11,11 +11,11 @@ namespace Gazelle.Migrations
                 name: "Cities",
                 columns: table => new
                 {
-                    ById = table.Column<Guid>(nullable: false)
+                    CityId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cities", x => x.ById);
+                    table.PrimaryKey("PK_Cities", x => x.CityId);
                 });
         }
 

@@ -8,9 +8,9 @@ namespace Gazelle.Models
 {
     public class GazelleContext: DbContext
     {
-        public DbSet<City> Cities { get; set; }
+        public GazelleContext(DbContextOptions<GazelleContext> options) : base(options)
+        { }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite("Data Source=gazelle.db");
+        public DbSet<City> Cities { get; set; }
     }
 }

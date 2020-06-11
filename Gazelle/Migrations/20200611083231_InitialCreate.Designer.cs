@@ -3,28 +3,31 @@ using System;
 using Gazelle.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Gazelle.Migrations
 {
     [DbContext(typeof(GazelleContext))]
-    [Migration("20200610093109_InitialCreate")]
+    [Migration("20200611083231_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.5");
+                .HasAnnotation("ProductVersion", "3.1.5")
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Gazelle.Models.By", b =>
+            modelBuilder.Entity("Gazelle.Models.City", b =>
                 {
-                    b.Property<Guid>("ById")
+                    b.Property<Guid>("CityId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ById");
+                    b.HasKey("CityId");
 
                     b.ToTable("Cities");
                 });
