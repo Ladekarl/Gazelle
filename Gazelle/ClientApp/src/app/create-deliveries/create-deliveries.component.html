@@ -5,17 +5,18 @@
     <div class="grid-item"> <h1 align="center"> Opret Forsendelse</h1></div>
   </div>
 
-  <div class="container">
+<div class="container">
+  <div class="row">
     <div class="row">
-      <div class="row">
-      </div>
-      <h3 align="left"> Udfyld pakke information </h3>
-
-   
     </div>
+    <h3 align="left"> Udfyld pakke information </h3>
 
 
-    <form>
+  </div>
+
+  <div class="form-group">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
       <div class="row">
         <div class="col">
           Vægt:
@@ -30,51 +31,50 @@
         <div class="col">
         </div>
       </div>
-    </form>
 
-    <div class="container">
-      <div class="row">
-        <div class="col">
-          Special leverance:
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            Special leverance:
+          </div>
+        </div>
+        <div>
+          <div class="col">
+            <input type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
+          </div>
+
+          <div class="col">
+            <input type="checkbox" id="FragileCheckbox"> Skrøbelig
+          </div>
+          <div class="col">
+            <input type="checkbox" id="frozenCheckbox"> Frys
+          </div>
+          <div class="col">
+            <input type="checkbox" id="animalCheckbox"> Dyr
+          </div>
         </div>
       </div>
-      <div>
-        <div class="col">
-          <input type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
-        </div>
 
-        <div class="col">
-          <input type="checkbox" id="FragileCheckbox"> Skrøbelig
-        </div>
-        <div class="col">
-          <input type="checkbox" id="frozenCheckbox"> Frys
-        </div>
-        <div class="col">
-          <input type="checkbox" id="animalCheckbox"> Dyr
-        </div>
-      </div>
-    </div>
-    </div>
+      <div class="container">
 
-  <div class="container">
-    <form [formGroup]="form" (ngSubmit)="submit()">
-
-      <div class="form-group">
         <label for="city">Fra by:</label>
         <select ng-model="cities" formControlName="city" name="options" required>
           <option *ngFor="let city of cities" [ngValue]="city">{{city}}</option>
         </select>
         <label for="city">Til by:</label>
-        <select ng-model="cities" formControlName="city" name="options" required>
-          <option *ngFor="let city of cities" [ngValue]="city">{{city}}</option>
+        <select ng-model="cities" formControlName="destination" name="options" required>
+          <option *ngFor="let city of cities" [ngValue]="city">{{destination}}</option>
         </select>
 
       </div>
     </form>
   </div>
+
+
   <div>
     <button (click)="showRoutes"> Vis ruter </button>
 
-  
+
   </div>
+</div>
 </div>
