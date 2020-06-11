@@ -23,4 +23,11 @@ export class CreateDeliveriesComponent implements OnInit {
     this.deliveryService.getCities().subscribe(result => this.cities = result);
   }
 
+  submit() {
+
+  }
+
+  showRoutes() {
+
+  }
 }

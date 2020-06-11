@@ -74,7 +74,7 @@ namespace Gazelle.Controllers
                 var min = prices.Min(c => c.Value);
                 cheapestCompaniesUsed.Add(prices.First(c => c.Value == min).Company);
                 return min;
-            });
+            }, deliveryTypes);
 
             var shortestCompaniesUsed = new List<string>();
             var shortestRoute = await CalculateShortestRoute(origin, destination, c =>
@@ -110,30 +110,33 @@ namespace Gazelle.Controllers
                 var min = times.Min(c => c.Value);
                 shortestCompaniesUsed.Add(times.First(c => c.Value == min).Company);
                 return min;
-            });
+            }, deliveryTypes);
 
             if (cheapestRoute == null || shortestRoute == null)
             {
                 return NotFound();
             }
 
+            cheapestRoute.Companies = cheapestCompaniesUsed.Distinct().ToList().ToString();
+            shortestRoute.Companies = shortestCompaniesUsed.Distinct().ToList().ToString();
+
             return new List<Route> { cheapestRoute, shortestRoute };
         }
 
-        private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionDto, int> comparison)
+        private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
         {
             var connections = await _context.Connections.ToListAsync();
             var path = await CalculateRoute(origin, destination, connections, comparison);
 
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(path, connections);
+                return await GetRouteFromPath(path, connections, deliveryTypes);
             }
 
             return null;
         }
 
-        private async Task<Route> GetRouteFromPath(IEnumerable<uint> path, ICollection<Connection> connections)
+        private async Task<Route> GetRouteFromPath(IEnumerable<uint> path, ICollection<Connection> connections, string deliveryTypes)
         {
             var resultConnections = new List<Connection>();
 
@@ -151,6 +154,21 @@ namespace Gazelle.Controllers
             var calcPrice = resultConnections.Sum(c => c.Price);
             var calcTime = resultConnections.Sum(c => c.Time);
 
+            var sentTypes = new List<DeliveryType>();
+
+            if (deliveryTypes != null)
+            {
+                var deliveryTypesArray = deliveryTypes.Split(',');
+
+                foreach (var deliveryType in deliveryTypesArray)
+                {
+                    var dbType = _context.DeliveryTypes.First(x => x.Name == deliveryType);
+                    sentTypes.Add(dbType);
+                }
+            }
+
+            var totalPriceAddition = sentTypes.Sum(x => x.Price);
+
             var route = new Route
             {
                 Price = calcPrice,
@@ -164,14 +182,14 @@ namespace Gazelle.Controllers
             return route;
         }
 
-        private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionDto, int> comparison)
+        private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
         {
             var connections = await _context.Connections.ToListAsync();
             var path = await CalculateRoute(origin, destination, connections, comparison);
 
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(path, connections);
+                return await GetRouteFromPath(path, connections, deliveryTypes);
             }
 
             return null;
