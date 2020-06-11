@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class DeliveryListService {
 
-  url: string = "http://localhost:44309/deliveries"
+  url: string = "http://localhost:44309/deliveries";
   url2: string = "";
   constructor(private http: HttpClient) {
   }
