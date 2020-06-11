@@ -40,3 +40,12 @@ code {
 .separator_200px {
     height: 200px;
 }
+
+.table {
+  border: 1px solid blue;
+}
+
+.th {
+  background-color: blue;
+  color: white;
+}
