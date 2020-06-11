@@ -9,7 +9,7 @@ namespace Gazelle.Models
     {
         public int DeliveryTypeId { get; set; }
         public string Name { get; set; }
-        public double Price { get; set; }
+        public int Price { get; set; }
         public ICollection<Delivery> Deliveries { get; set;}
     }
 }
