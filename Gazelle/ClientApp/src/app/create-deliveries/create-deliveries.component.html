@@ -1,0 +1,70 @@
+<app-nav-menu-salesman></app-nav-menu-salesman>
+<div class="container">
+
+  <div class="grid-container">
+    <div class="grid-item"> <h1 align="center"> Opret Forsendelse</h1></div>
+  </div>
+
+  <div class="container">
+
+    <div class="row">
+      <div class="row">
+
+      </div>
+      <h3> Udfyld pakke information </h3>
+
+      <div class="col">
+      </div>
+      <div class="col">
+
+      </div>
+    </div>
+
+
+    <form>
+      <div class="row">
+        <div class="col">
+          Vægt:
+        </div>
+        <div class="col">
+          <input type="number" #weigth min="0" max="40">
+        </div>
+        <div class="col">
+        </div>
+        <div class="col">
+        </div>
+      </div>
+    </form>
+
+    <div class="container">
+      <label>
+        <input type="checkbox" id="recodedDeliveryCheckbox"> Er pakken rekommenderet?
+      </label>
+
+      <label>
+        <input type="checkbox" id="Checkbox"> Er pakken rekommenderet?
+      </label>
+
+      <label>
+        <input type="checkbox" id="recodedDeliveryCheckbox"> Er pakken rekommenderet?
+      </label>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="form-group">
+        <label for="city">Fra by:</label>
+        <select formControlName="city" class="form-control">
+          <option ngFor="let city in cities" value="city">{{city}}</option>
+        </select>
+
+      </div>
+    </form>
+  </div>
+
+  <app-salesman-route-list></app-salesman-route-list>
+
+</div>
