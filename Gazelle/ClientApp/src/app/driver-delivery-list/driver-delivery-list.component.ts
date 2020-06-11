@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DeliveryListService } from '../delivery-list.service';
 
 @Component({
@@ -10,8 +11,15 @@ export class DriverDeliveryListComponent implements OnInit{
 
   constructor(private deliveryListService: DeliveryListService) {}
 
-  public deliveries = this.deliveryListService.getDeliveryList();
+  deliveries: string[];
+
+  public displayRuteDetails() {
+    alert("CLICKED!");
+  }
 
   ngOnInit() {
+    this.deliveryListService.getDeliveryList().subscribe(result => {
+      this.deliveries = result;
+    }, error => console.error(error));
   }
 }

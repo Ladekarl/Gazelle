@@ -15,7 +15,8 @@ export class CreateDeliveriesComponent implements OnInit {
   constructor(private deliveryService: DeliveryService) {}
 
   form = new FormGroup({
-    city: new FormControl('', Validators.required)
+    city: new FormControl('', Validators.required),
+    destination: new FormControl('', Validators.required)
   });
  
 

@@ -36,9 +36,11 @@ namespace Gazelle.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Delivery>>> Get()
+        public async Task<ActionResult<List<Delivery>>> Get()
         {
-            var delivery = new Delivery
+            List<Delivery> deliveryList = new List<Delivery>();
+
+            deliveryList.Add(new Delivery
             {
                 DeliveryId = 1,
                 DriverId = 2,
@@ -93,8 +95,8 @@ namespace Gazelle.Controllers
                         }
                     }
                 }
-            };
-            return Ok(delivery);
+            });
+            return Ok(deliveryList);
             //return await _context.Deliveries.ToListAsync();
         }
 

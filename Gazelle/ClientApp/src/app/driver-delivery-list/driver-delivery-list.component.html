@@ -2,26 +2,19 @@
 
 <table class="table">
   <thead>
-    <tr>
-      <th class="th">Pakke Id</th>
+    <tr onclick="displayRuteDetails()">
+      <th class="th">Chauffør Id</th>
       <th class="th">Oprindelses by</th>
       <th class="th">Destinations by</th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let delivery of deliveries">
-      <td>{{ delivery.parcelId }}</td>
-      <td>{{ delivery.originCity }}</td>
-      <td>{{ delivery.destinationCity }}</td>
+      <td>{{ delivery.driverId }}</td>
+      <td>{{ delivery.startCity.cityName }}</td>
+      <td>{{ delivery.endCity.cityName }}</td>
     </tr>
   </tbody>
 </table>
-
-
-
-
-
-
-
 
 <app-driver-route-details></app-driver-route-details>
