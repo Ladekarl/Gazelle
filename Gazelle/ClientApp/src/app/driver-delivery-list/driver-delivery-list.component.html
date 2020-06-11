@@ -1,5 +1,26 @@
 <app-nav-menu-driver></app-nav-menu-driver>
 
-<p>driver-delivery-list works!</p>
+<table class="table">
+  <thead> </thead>
+    <tr>
+      <th class="th">Pakke Id</th>
+      <th class="th">Oprindelses by</th>
+      <th class="th">Destinations by</th>
+    </tr>
+  <tbody>
+    <tr *ngFor="let delivery of deliveries">
+      <td>{{ delivery.driverId }}</td>
+      <td>{{ delivery.originCity }}</td>
+      <td>{{ delivery.destinationCity }}</td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
 
 <app-driver-route-details></app-driver-route-details>
