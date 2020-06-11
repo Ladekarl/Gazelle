@@ -36,45 +36,12 @@ namespace Gazelle.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Delivery>>> GetDeliveries()
+        public async Task<ActionResult<IEnumerable<Delivery>>> Get()
         {
             return await _context.Deliveries.ToListAsync();
         }
 
-        [HttpGet(Name = "Routes")]
-        public async Task<ActionResult<Route>> GetRoutes(string origin, string destination, string weight)
-        {
-            var routes = new List<Route>();
-
-            var connections = new List<Connection>();
-            connections.Add(new Connection
-            {
-                ConnectionId = 1,
-                Price = 50,
-                Time = 500,
-                Company = "Telstar",
-                StartCity = new City { CityId = Guid.NewGuid(), CityName = "Dakar", Country = new Country { CountryId = 1, Conflict = false, Name = "Marokko" } },
-                EndCity = new City
-                {
-                    CityId = Guid.NewGuid(),
-                    CityName = "Marakkesh",
-                    Country = new Country { CountryId = 1, Conflict = false, Name = "Marokko" },
-                }
-            });
-
-            routes.Add(new Route
-            {
-                RouteId = 1,
-                Price = 50,
-                Time = 500,
-                Companies = "Telstar,EastIndia",
-                Connections = connections
-            });
-
-            return Ok(routes);
-        }
-
-        [HttpPost(Name = "Approve")]
+        [HttpPost]
         public async Task<ActionResult<Delivery>> ApproveDelivery([FromBody] ApproveDeliveryModel approveDeliveryModel)
         {
             var delivery = await _context.Deliveries
