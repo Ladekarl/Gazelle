@@ -38,7 +38,64 @@ namespace Gazelle.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Delivery>>> Get()
         {
-            return await _context.Deliveries.ToListAsync();
+            var delivery = new Delivery
+            {
+                DeliveryId = 1,
+                DriverId = 2,
+                Weight = 35,
+                DeliveryType = new DeliveryType
+                {
+                    DeliveryTypeId = 1,
+                    Name = "frozen",
+                    Price = 40
+                },
+                StartCity = _context.Cities.First(),
+                EndCity = _context.Cities.Last(),
+                Length = 40,
+                ApprovedRoute = new Route
+                {
+                    RouteId = 1,
+                    Price = 40,
+                    Time = 50,
+                    Companies = "Telstar",
+                    Connections = new List<Connection>
+                    {
+                         new Connection
+                        {
+                            ConnectionId = 1,
+                            Price = 40,
+                            Time = 40,
+                            Company = "Telstar",
+                            StartCity = _context.Cities.First(),
+                            EndCity = _context.Cities.Last()
+                        }
+                    }
+                },
+                Routes = new List<Route>
+                {
+                    new Route
+                    {
+                        RouteId = 1,
+                        Price = 40,
+                        Time = 50,
+                        Companies = "Telstar",
+                        Connections = new List<Connection>
+                        {
+                             new Connection
+                            {
+                                ConnectionId = 1,
+                                Price = 40,
+                                Time = 40,
+                                Company = "Telstar",
+                                StartCity = _context.Cities.First(),
+                                EndCity = _context.Cities.Last()
+                            }
+                        }
+                    }
+                }
+            };
+            return Ok(delivery);
+            //return await _context.Deliveries.ToListAsync();
         }
 
         [HttpPost]

@@ -8,8 +8,8 @@ namespace Gazelle.Models
     public class Route
     {
         public int RouteId { get; set; }
-        public double Price { get; set; }
-        public double Time { get; set; }
+        public int Price { get; set; }
+        public int Time { get; set; }
         public string Companies { get; set; }
         public ICollection<Connection> Connections { get; set; }
     }
