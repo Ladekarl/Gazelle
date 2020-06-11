@@ -22,7 +22,7 @@ namespace Gazelle.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<int>>> Get(string origin, string destination, string weight)
+        public async Task<ActionResult<Route>> Get(string origin, string destination, string weight)
         {
             var graph = new Graph<int, int>();
 
@@ -53,14 +53,39 @@ namespace Gazelle.Controllers
             var result = graph.Dijkstra((uint)fromCityId, (uint)toCityId);
             var path = result.GetPath();
 
-            var resultEdges = new List<int>();
-            foreach(var edge in path)
+            if(path.Count() >= 2)
             {
-                var graphNode = graph[edge] as Node<int, int>;
-                resultEdges.Add(graphNode.Item);
-            }
+                var resultConnections = new List<Connection>();
 
-            return Ok(resultEdges);
+                for (int i = 1; i < path.Count(); i++)
+                {
+                    var firstElement = path.ElementAt(i - 1);
+                    var secondElement = path.ElementAt(i);
+                    var edgeConnection = connections
+                        .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement)
+                        .OrderBy(c => c.Price)
+                        .First();
+                    resultConnections.Add(edgeConnection);
+                }
+
+                var calcPrice = resultConnections.Sum(c => c.Price);
+                var calcTime = resultConnections.Sum(c => c.Time);
+
+                var route = new Route
+                {
+                    Price = calcPrice,
+                    Time = calcTime,
+                    Companies = "Telstar",
+                    Connections = resultConnections
+                };
+
+                _context.Routes.Add(route);
+                await _context.SaveChangesAsync();
+                return route;
+            } else
+            {
+                return NotFound();
+            }
         }
 
         public class RouteNode

@@ -49,8 +49,8 @@ namespace Gazelle.Controllers
                     Name = "frozen",
                     Price = 40
                 },
-                StartCity = _context.Cities.First(),
-                EndCity = _context.Cities.Last(),
+                StartCity = _context.Cities.ToList().First(),
+                EndCity = _context.Cities.ToList().Last(),
                 Length = 40,
                 ApprovedRoute = new Route
                 {
@@ -66,8 +66,8 @@ namespace Gazelle.Controllers
                             Price = 40,
                             Time = 40,
                             Company = "Telstar",
-                            StartCity = _context.Cities.First(),
-                            EndCity = _context.Cities.Last()
+                            StartCity = _context.Cities.ToList().First(),
+                            EndCity = _context.Cities.ToList().Last()
                         }
                     }
                 },
@@ -87,8 +87,8 @@ namespace Gazelle.Controllers
                                 Price = 40,
                                 Time = 40,
                                 Company = "Telstar",
-                                StartCity = _context.Cities.First(),
-                                EndCity = _context.Cities.Last()
+                                StartCity = _context.Cities.ToList().First(),
+                                EndCity = _context.Cities.ToList().Last()
                             }
                         }
                     }
