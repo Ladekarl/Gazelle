@@ -14,75 +14,82 @@
 
     </div>
 
-    <div class="form-group">
-      <form>
+    <div class="container">
+      <div class="form-group">
+        <form>
 
-        <div class="row">
-          <div class="col">
-            Vægt:
-          </div>
-          <div class="col">
-            <input [(ngModel)]="weight" name="weight" id="WeightBox" type="number" #weigth min="0" max="40">
-          </div>
-          <div class="col">
-            Længde:
-          </div>
-          <div class="col">
-            <input [(ngModel)]="length" name="length" id="lengthBox" type="number" #weigth min="0">
-          </div>
-          <div class="col">
-            Dybde:
-          </div>
-          <div class="col">
-            <input [(ngModel)]="depth" name="depth" id="depthBox" type="number" #weigth min="0">
-          </div>
-          <div class="col">
-            Højde:
-          </div>
-          <div class="col">
-            <input [(ngModel)]="height" name="height" id="heightBox" type="number" #weigth min="0">
-          </div>
-          <div class="col">
-            <input type="checkbox" id="ConflictZoneCheckbox"> Konfliktramt
-          </div>
-        </div>
-
-        <div class="container">
           <div class="row">
             <div class="col">
-              Special leverance:
+              Vægt:
+            </div>
+            <div class="col">
+              <input [(ngModel)]="weight" name="weight" id="WeightBox" type="number" min="0" max="40">
             </div>
           </div>
-          <div>
+          <div class="row">
             <div class="col">
-              <input [(ngModel)]="recordedDelivery" name="recordedDelivery" type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
-            </div>
-
-            <div class="col">
-              <input [(ngModel)]="fragile" name="fragile" type="checkbox" id="FragileCheckbox"> Skrøbelig
+              Længde:
             </div>
             <div class="col">
-              <input [(ngModel)]="frozen" name="frozen" type="checkbox" id="frozenCheckbox"> Frys
-            </div>
-            <div class="col">
-              <input [(ngModel)]="animal" name="animal" type="checkbox" id="animalCheckbox"> Dyr
+              <input [(ngModel)]="length" name="length" id="lengthBox" type="number" min="0">
             </div>
           </div>
-        </div>
+          <div class="row">
+            <div class="col">
+              Dybde:
+            </div>
+          <div class="col">
+            <input [(ngModel)]="depth" name="depth" id="depthBox" type="number" min="0">
+          </div>
+          </div>
+            <div class="row">
+              <div class="col">
+                Højde:
+              </div>
+              <div class="col">
+                <input [(ngModel)]="height" name="height" id="heightBox" type="number" min="0">
+              </div>
+            </div>
 
-        <div class="container">
 
-          <label for="city">Fra by:</label>
-          <select [(ngModel)]="origin" name="options" required>
-            <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
-          </select>
-          <label for="city">Til by:</label>
-          <select [(ngModel)]="destination" name="options" required>
-            <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
-          </select>
+            <div class="container">
+              <div class="row">
+                <div class="col">
+                  Special leverance:
+                </div>
+              </div>
+              <div>
+                <div class="col">
+                  <input [(ngModel)]="recordedDelivery" name="recordedDelivery" type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
+                </div>
 
-        </div>
-      </form>
+                <div class="col">
+                  <input [(ngModel)]="fragile" name="fragile" type="checkbox" id="FragileCheckbox"> Skrøbelig
+                </div>
+                <div class="col">
+                  <input [(ngModel)]="frozen" name="frozen" type="checkbox" id="frozenCheckbox"> Frys
+                </div>
+                <div class="col">
+                  <input [(ngModel)]="animal" name="animal" type="checkbox" id="animalCheckbox"> Dyr
+                </div>
+                <div class="col">
+                  <input type="checkbox" id="ConflictZoneCheckbox"> Konfliktramt
+                </div>
+              </div>
+            </div>
+
+            <div class="container">
+              <label for="city">Fra by:</label>
+              <select [(ngModel)]="origin" name="options" required>
+                <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
+              </select>
+              <label for="city">Til by:</label>
+              <select [(ngModel)]="destination" name="options" required>
+                <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
+              </select>
+            </div>
+        </form>
+      </div>
     </div>
 
 
