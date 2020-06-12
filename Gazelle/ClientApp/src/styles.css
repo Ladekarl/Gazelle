@@ -71,11 +71,13 @@ code {
 
 .tr {
   width: inherit;
+  background-color: white;
 }
 
 .td {
   position: relative;
   width: 20%;
+  background-color: white;
 }
 
 
