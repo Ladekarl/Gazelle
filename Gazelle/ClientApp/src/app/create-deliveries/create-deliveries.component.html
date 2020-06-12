@@ -62,11 +62,11 @@
 
         <label for="city">Fra by:</label>
         <select ng-model="cities" formControlName="city" name="options" required>
-          <option *ngFor="let city of cities" [ngValue]="city">{{city}}</option>
+          <option *ngFor="let city of cities" [ngValue]="city"></option>
         </select>
         <label for="city">Til by:</label>
-        <select ng-model="cities" formControlName="destination" name="options" required>
-          <option *ngFor="let city of cities" [ngValue]="city">{{destination}}</option>
+        <select ng-model="cities" formControlName="city" name="options" required>
+          <option *ngFor="let city of cities" [ngValue]="city"></option>
         </select>
 
       </div>
