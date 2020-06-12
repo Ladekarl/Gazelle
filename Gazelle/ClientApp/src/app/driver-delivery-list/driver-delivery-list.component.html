@@ -1,20 +1,30 @@
 <app-nav-menu-driver></app-nav-menu-driver>
 
-<table class="table">
-  <thead>
-    <tr onclick="displayRuteDetails()">
-      <th class="th">Chauffør Id</th>
-      <th class="th">Oprindelses by</th>
-      <th class="th">Destinations by</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let delivery of deliveries">
-      <td>{{ delivery.driverId }}</td>
-      <td>{{ delivery.startCity.cityName }}</td>
-      <td>{{ delivery.endCity.cityName }}</td>
-    </tr>
-  </tbody>
-</table>
+
+
+  <li class="table">
+    <thead class="thead">
+      <tr onclick="displayRuteDetails(delivery)">
+        <th class="th">Chauffør Id</th>
+        <th class="th">Start by</th>
+        <th class="th">Destinations by</th>
+        <th class="th">Tidsestimate</th>
+      </tr>
+    </thead>
+    <tbody class="tbod">
+      <tr class="tr" *ngFor="let delivery of deliveries">
+        <td class="td" style="color: red">  {{delivery.driverId}}  </td>
+        <td class="td" style="color: purple">  {{delivery.startCity.cityName}}  </td>
+        <td class="td" style="color: green">  {{delivery.endCity.cityName}}  </td>
+        <td class="td" style="color: black">  {{delivery.approvedRoute.time}} timer </td>
+      </tr>
+    </tbody>
+  </li>
+
+
+
 
 <app-driver-route-details></app-driver-route-details>
+
+
+

@@ -13,8 +13,13 @@ export class DriverDeliveryListComponent implements OnInit{
 
   deliveries: string[];
 
-  public displayRuteDetails() {
-    alert("CLICKED!");
+  getRouteDetails() {
+    alert("CLICKED");
+
+  }
+
+  public displayRuteDetails(delivery) {
+    delivery.open = !delivery.open;
   }
 
   ngOnInit() {
