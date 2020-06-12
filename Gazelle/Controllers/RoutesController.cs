@@ -80,9 +80,22 @@ namespace Gazelle.Controllers
             var shortestRoute = await CalculateShortestRoute(origin, destination, c =>
             {
                 var times = new List<ComparisonDto>();
-                var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", origin, destination, weight, length, height, depth, deliveryTypes);
-                var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", origin, destination, weight, length, height, depth, deliveryTypes);
-
+                ConnectionDto eastIndia = null;
+                ConnectionDto oceanic = null;
+                try
+                {
+                    eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", origin, destination, weight, length, height, depth, deliveryTypes);
+                } catch(Exception ex)
+                {
+                    //Ignored
+                };
+                try
+                {
+                    oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", origin, destination, weight, length, height, depth, deliveryTypes);
+                } catch(Exception ex)
+                {
+                    //Ignored
+                }
                 if (eastIndia != null)
                 {
                     times.Add(new ComparisonDto
@@ -117,28 +130,26 @@ namespace Gazelle.Controllers
                 return NotFound();
             }
 
-            cheapestRoute.Companies = cheapestCompaniesUsed.Distinct().ToList().ToString();
-            shortestRoute.Companies = shortestCompaniesUsed.Distinct().ToList().ToString();
-
             return new List<Route> { cheapestRoute, shortestRoute };
         }
 
         private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
         {
             var connections = await _context.Connections.ToListAsync();
-            var path = await CalculateRoute(origin, destination, connections, comparison);
-
+            var result = await CalculateRoute(origin, destination, connections, comparison);
+            var path = result.GetPath();
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(path, connections, deliveryTypes);
+                return await GetRouteFromPath(result, connections, deliveryTypes, false);
             }
 
             return null;
         }
 
-        private async Task<Route> GetRouteFromPath(IEnumerable<uint> path, ICollection<Connection> connections, string deliveryTypes)
+        private async Task<Route> GetRouteFromPath(ShortestPathResult result, ICollection<Connection> connections, string deliveryTypes, bool isTime)
         {
             var resultConnections = new List<Connection>();
+            var path = result.GetPath();
 
             for (int i = 1; i < path.Count(); i++)
             {
@@ -147,8 +158,11 @@ namespace Gazelle.Controllers
                 var edgeConnection = connections
                     .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement)
                     .OrderBy(c => c.Price)
-                    .First();
-                resultConnections.Add(edgeConnection);
+                    .FirstOrDefault();
+                if(edgeConnection != null)
+                {
+                    resultConnections.Add(edgeConnection);
+                }
             }
 
             var calcPrice = resultConnections.Sum(c => c.Price);
@@ -162,8 +176,11 @@ namespace Gazelle.Controllers
 
                 foreach (var deliveryType in deliveryTypesArray)
                 {
-                    var dbType = _context.DeliveryTypes.First(x => x.Name == deliveryType);
-                    sentTypes.Add(dbType);
+                    if(!string.IsNullOrEmpty(deliveryType))
+                    {
+                        var dbType = _context.DeliveryTypes.First(x => x.Name == deliveryType);
+                        sentTypes.Add(dbType);
+                    }
                 }
             }
 
@@ -171,8 +188,8 @@ namespace Gazelle.Controllers
 
             var route = new Route
             {
-                Price = calcPrice,
-                Time = calcTime,
+                Price = !isTime ? result.Distance : calcPrice + (calcPrice * (totalPriceAddition / 100)),
+                Time = isTime ? result.Distance : calcTime,
                 Companies = "Telstar",
                 Connections = resultConnections
             };
@@ -185,11 +202,11 @@ namespace Gazelle.Controllers
         private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
         {
             var connections = await _context.Connections.ToListAsync();
-            var path = await CalculateRoute(origin, destination, connections, comparison);
-
+            var result = await CalculateRoute(origin, destination, connections, comparison);
+            var path = result.GetPath();
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(path, connections, deliveryTypes);
+                return await GetRouteFromPath(result, connections, deliveryTypes, false);
             }
 
             return null;
@@ -212,7 +229,7 @@ namespace Gazelle.Controllers
             return null;
         }
 
-        private async Task<IEnumerable<uint>> CalculateRoute(string origin, string destination, IEnumerable<Connection> connections, Func<ConnectionDto, int> comparison)
+        private async Task<ShortestPathResult> CalculateRoute(string origin, string destination, IEnumerable<Connection> connections, Func<ConnectionDto, int> comparison)
         {
             var graph = new Graph<int, int>();
 
@@ -245,8 +262,7 @@ namespace Gazelle.Controllers
                 .CityId;
 
             var result = graph.Dijkstra((uint)fromCityId, (uint)toCityId);
-            var path = result.GetPath();
-            return path;
+            return result;
         }
 
         public class RouteNode

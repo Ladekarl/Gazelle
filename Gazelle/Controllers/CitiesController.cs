@@ -6,8 +6,8 @@ using Gazelle.Models;
 
 namespace Gazelle.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class CitiesController : ControllerBase
     {
         private readonly GazelleContext _context;

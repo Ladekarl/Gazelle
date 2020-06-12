@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { DeliveryService } from "../delivery.service";
-
 
 @Component({
   selector: 'app-create-deliveries',
@@ -10,25 +8,53 @@ import { DeliveryService } from "../delivery.service";
 })
 export class CreateDeliveriesComponent implements OnInit {
 
-  cities: String [];
+  cities: String[];
+  origin: any;
+  destination: any;
+  fragile: any;
+  frozen: any;
+  animal: any;
+  recordedDelivery: any;
+  length: any;
+  height: any
+  depth: any;
+  weight: any;
+  routes: any;
+
 
   constructor(private deliveryService: DeliveryService) {}
 
-  form = new FormGroup({
-    city: new FormControl('', Validators.required),
-    destination: new FormControl('', Validators.required)
-  });
- 
 
   ngOnInit() {
-    this.deliveryService.getCities().subscribe(result => this.cities = result);
+    this.deliveryService.getCities().subscribe(result => {
+      this.cities = result;
+    });
   }
 
-  submit() {
-
-  }
 
   showRoutes() {
+    var deliveryTypes = '';
+    if (this.fragile) {
+      deliveryTypes += 'fragile,';
+    }
+    if (this.frozen) {
+      deliveryTypes += 'frozen,';
+    }
+    if (this.animal) {
+      deliveryTypes += 'animal,';
+    }
+    if (this.recordedDelivery) {
+      deliveryTypes += 'recordedDelivery,';
+    }
+    this.deliveryService.getRoutes(this.origin.cityName, this.destination.cityName, this.weight, this.length, this.height, this.depth, deliveryTypes).subscribe(result => {
+      this.routes = result;
+    });
+  }
 
+  onSelect(route) {
+    var driverId = Math.floor(Math.random() * 6);  
+    this.deliveryService.post(driverId, this.weight, this.origin.cityName, this.destination.cityName, route.routeId).subscribe(result => {
+      alert("Ruten er blevet tildelt chauffør: " + driverId);
+    });
   }
 }
