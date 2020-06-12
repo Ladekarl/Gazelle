@@ -160,6 +160,7 @@ namespace Gazelle.Controllers
             var connections = await _context.Connections
                 .Include(c => c.StartCity).ThenInclude(c => c.Country)
                 .Include(c => c.EndCity).ThenInclude(c => c.Country)
+                .Where(c => c.Company == "Telstar")
                 .ToListAsync();
             var result = await CalculateRoute(origin, destination, connections, comparison);
             var path = result.GetPath();
@@ -179,59 +180,15 @@ namespace Gazelle.Controllers
             {
                 var firstElement = path.ElementAt(i - 1);
                 var secondElement = path.ElementAt(i);
-                var edgeConnections = connections
-                    .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement)
+                var edgeConnection = connections
+                    .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement && c.Company == "Telstar")
                     .OrderBy(c => c.Price)
-                    .ToList();
+                    .FirstOrDefault();
 
-                foreach (var edgeConnection in edgeConnections)
+                if(edgeConnection != null)
                 {
-
-                    var firstElementName = _context.Cities.Find(Convert.ToInt32(firstElement));
-                    var secondElementName = _context.Cities.Find(Convert.ToInt32(secondElement));
-                    var elements = new List<ConnectionDto>();
-                    var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", firstElementName.CityName, secondElementName.CityName, weight, length, height, depth, deliveryTypes);
-                    var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", firstElementName.CityName, secondElementName.CityName, weight, length, height, depth, deliveryTypes);
-                    if (eastIndia != null)
-                    {
-                        elements.Add(eastIndia);
-                    }
-                    if (oceanic != null)
-                    {
-                        elements.Add(oceanic);
-                    }
-                    elements.Add(new ConnectionDto
-                    {
-                        Price = edgeConnection.Price,
-                        Time = edgeConnection.Time
-                    });
-                    if (elements.Count > 0)
-                    {
-                        if (isTime)
-                        {
-                            elements.OrderBy(c => c.Time);
-                        }
-                        else
-                        {
-                            elements.OrderBy(c => c.Price);
-                        }
-                        var first = elements.Where(c=> c.Price > 0 && c.Time > 0).First();
-                        edgeConnection.Price = Convert.ToInt32(first.Price);
-                        edgeConnection.Time = Convert.ToInt32(first.Time);
-                    }
+                    resultConnections.Add(edgeConnection);
                 }
-
-                if (isTime)
-                {
-                    edgeConnections.OrderBy(c => c.Time);
-                }
-                else
-                {
-                    edgeConnections.OrderBy(c => c.Price);
-                }
-                var firstEdge = edgeConnections.Where(c => c.Price > 0 && c.Time > 0).First();
-
-                resultConnections.Add(firstEdge);
             }
 
             bool hasWar = resultConnections.Any(c => c.EndCity.Country.Conflict || c.StartCity.Country.Conflict);
@@ -281,7 +238,7 @@ namespace Gazelle.Controllers
 
         private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes, int weight, int length, int height, int depth)
         {
-            var connections = await _context.Connections.ToListAsync();
+            var connections = await _context.Connections.Where(c=> c.Company == "Telstar").ToListAsync();
             var result = await CalculateRoute(origin, destination, connections, comparison);
             var path = result.GetPath();
             if (path.Count() >= 2)
