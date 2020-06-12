@@ -13,18 +13,15 @@
     </thead>
     <tbody class="tbod">
       <tr class="tr" *ngFor="let delivery of deliveries">
-        <td class="td" style="color: red">  {{delivery.driverId}}  </td>
-        <td class="td" style="color: purple">  {{delivery.startCity.cityName}}  </td>
-        <td class="td" style="color: green">  {{delivery.endCity.cityName}}  </td>
-        <td class="td" style="color: black">  {{delivery.approvedRoute.time}} timer </td>
+        <td class="td">  {{delivery.driverId}}  </td>
+        <td class="td">  {{delivery.startCity.cityName}}  </td>
+        <td class="td">  {{delivery.endCity.cityName}}  </td>
+        <td class="td">  {{delivery.approvedRoute.time}} timer </td>
       </tr>
     </tbody>
   </li>
 
 
-
-
-<app-driver-route-details></app-driver-route-details>
 
 
 

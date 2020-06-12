@@ -1,6 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Gazelle",
+    "\\Gazelle\\ClientApp"
   ],
   "PreviewInSolutionExplorer": false
 }
