@@ -97,35 +97,29 @@
       <button (click)="showRoutes()"> Vis ruter </button>
     </div>
 
-    
+  <!--  
   <div class="container">
     <li *ngFor="let route of routes">
       <a>Pris: {{route.price}}</a> Tid: {{route.time}}  <button (click)="onSelect(route)">Vælg rute</button>
     </li>
   </div>
-  <!---
-
+  --->
+    <div class="separator_30px"></div>
   <li class="table">
     <thead class="thead">
     <tr>
-      <th class="th">Start by</th>
-      <th class="th">Destinations by</th>
       <th class="th">Tidsestimate</th>
       <th class="th"> Pris</th>
       <th class="th">Godkend</th>
     </tr>
     </thead>
     <tbody class="tbod">
-    <tr class="tr" *ngFor="let route of routes">
-      <td class="td"> {{route.startCity.cityName}}  </td>
-      <td class="td"> {{route.endCity.cityName}} </td>
-      <td class="td"> {{route.price}} US dollars </td>
-      <td class="td"> {{route.time}} timer </td>
-      <td class="td"> <button (click)="onSelect(route)">Vælg rute</button> </td>
-    </tr>
+      <tr class="tr" *ngFor="let route of routes">
+        <td class="td"> {{route.price}} US dollars </td>
+        <td class="td"> {{route.time}} timer </td>
+        <td class="td"> <button (click)="onSelect(route)">Vælg rute</button> </td>
+      </tr>
     </tbody>
   </li>
-    --->
-
   </div>
 </div>
