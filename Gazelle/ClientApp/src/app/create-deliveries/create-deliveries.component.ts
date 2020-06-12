@@ -16,7 +16,7 @@ export class CreateDeliveriesComponent implements OnInit {
 
   form = new FormGroup({
     city: new FormControl('', Validators.required),
-    destination: new FormControl('', Validators.required)
+    destination: new FormControl('', Validators.required),
   });
  
 
