@@ -69,15 +69,14 @@ code {
   width: inherit;
 }
 
-.tr {
+.tr:nth-child(even) {
   width: inherit;
-  background-color: white;
+  background-color: #e9ecef;
 }
 
 .td {
   position: relative;
   width: 20%;
-  background-color: white;
 }
 
 
