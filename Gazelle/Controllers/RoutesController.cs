@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -59,7 +60,7 @@ namespace Gazelle.Controllers
                 {
                     prices.Add(new ComparisonDto
                     {
-                        Value = eastIndia.Price.Value,
+                        Value = Convert.ToInt32(eastIndia.Price.Value),
                         Company = "East India"
                     });
                 }
@@ -68,12 +69,12 @@ namespace Gazelle.Controllers
                 {
                     prices.Add(new ComparisonDto
                     {
-                        Value = oceanic.Price.Value,
+                        Value = Convert.ToInt32(oceanic.Price.Value),
                         Company = "Oceanic"
                     });
                 }
 
-                if(c.Price.HasValue)
+                if (c.Price.HasValue)
                 {
                     prices.Add(new ComparisonDto
                     {
@@ -81,12 +82,12 @@ namespace Gazelle.Controllers
                         Company = "Telstar"
                     });
                 }
-                if(prices.Count() > 0)
+                if (prices.Count() > 0)
                 {
                     return prices.Min(c => c.Value);
                 }
                 return 10000;
-            }, deliveryTypes);
+            }, deliveryTypes, weight, length, height, depth);
 
             var shortestCompaniesUsed = new List<string>();
             var shortestRoute = await CalculateShortestRoute(origin, destination, c =>
@@ -114,7 +115,7 @@ namespace Gazelle.Controllers
                 {
                     times.Add(new ComparisonDto
                     {
-                        Value = eastIndia.Time.Value,
+                        Value = Convert.ToInt32(eastIndia.Time.Value),
                         Company = "East India"
                     });
                 }
@@ -123,11 +124,11 @@ namespace Gazelle.Controllers
                 {
                     times.Add(new ComparisonDto
                     {
-                        Value = oceanic.Time.Value,
+                        Value = Convert.ToInt32(oceanic.Time.Value),
                         Company = "Oceanic"
                     });
                 }
-                if(c.Time.HasValue)
+                if (c.Time.HasValue)
                 {
                     times.Add(new ComparisonDto
                     {
@@ -141,7 +142,7 @@ namespace Gazelle.Controllers
                     return times.Min(c => c.Value);
                 }
                 return 10000;
-            }, deliveryTypes);
+            }, deliveryTypes, weight, length, height, depth);
 
             if (cheapestRoute == null || shortestRoute == null)
             {
@@ -154,23 +155,24 @@ namespace Gazelle.Controllers
             return new List<Route> { cheapestRoute, shortestRoute };
         }
 
-        private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes)
+        private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes, int weight, int length, int height, int depth)
         {
             var connections = await _context.Connections
                 .Include(c => c.StartCity).ThenInclude(c => c.Country)
                 .Include(c => c.EndCity).ThenInclude(c => c.Country)
+                .Where(c => c.Company == "Telstar")
                 .ToListAsync();
             var result = await CalculateRoute(origin, destination, connections, comparison);
             var path = result.GetPath();
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(result, connections, deliveryTypes, false);
+                return await GetRouteFromPath(result, connections, deliveryTypes, false, weight, length, height, depth);
             }
 
             return null;
         }
 
-        private async Task<Route> GetRouteFromPath(ShortestPathResult result, ICollection<Connection> connections, string deliveryTypes, bool isTime)
+        private async Task<Route> GetRouteFromPath(ShortestPathResult result, ICollection<Connection> connections, string deliveryTypes, bool isTime, int weight, int length, int height, int depth)
         {
             var resultConnections = new List<Connection>();
             var path = result.GetPath();
@@ -179,10 +181,11 @@ namespace Gazelle.Controllers
                 var firstElement = path.ElementAt(i - 1);
                 var secondElement = path.ElementAt(i);
                 var edgeConnection = connections
-                    .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement)
+                    .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement && c.Company == "Telstar")
                     .OrderBy(c => c.Price)
                     .FirstOrDefault();
-                if (edgeConnection != null)
+
+                if(edgeConnection != null)
                 {
                     resultConnections.Add(edgeConnection);
                 }
@@ -212,7 +215,7 @@ namespace Gazelle.Controllers
             if (hasWar)
             {
                 var warDelivery = _context.DeliveryTypes.First(x => x.Name == "war");
-                if(!sentTypes.Contains(warDelivery))
+                if (!sentTypes.Contains(warDelivery))
                 {
                     sentTypes.Add(warDelivery);
                 }
@@ -233,14 +236,14 @@ namespace Gazelle.Controllers
             return route;
         }
 
-        private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes)
+        private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes, int weight, int length, int height, int depth)
         {
-            var connections = await _context.Connections.ToListAsync();
+            var connections = await _context.Connections.Where(c=> c.Company == "Telstar").ToListAsync();
             var result = await CalculateRoute(origin, destination, connections, comparison);
             var path = result.GetPath();
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(result, connections, deliveryTypes, true);
+                return await GetRouteFromPath(result, connections, deliveryTypes, true, weight, length, height, depth);
             }
 
             return null;
@@ -248,17 +251,20 @@ namespace Gazelle.Controllers
 
         private ConnectionDto GetFromRemote(string url, string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
         {
-            WebRequest request = WebRequest.Create(string.Format("{0}?origin={1}&destination={2}&weight={3}&length={4}&height={5}&depth={6}&deliveryTypes={7}", url, origin, destination, weight, length, height, depth, deliveryTypes));
+            WebRequest request = WebRequest.Create(string.Format("{0}?origin={1}&destination={2}&weight={3}&length={4}&width={5}&depth={6}&deliverytypes={7}", url, origin, destination, weight, length, height, depth, deliveryTypes));
             request.Method = "GET";
 
             HttpWebResponse response = ((HttpWebRequest)request).GetResponseNoException();
 
-            if (response != null && response.StatusDescription == "OK")
+            if (response != null && response.StatusCode == HttpStatusCode.OK)
             {
                 Stream dataStream = response.GetResponseStream();
                 StreamReader reader = new StreamReader(dataStream);
                 string responseFromServer = reader.ReadToEnd();
-                return JsonConvert.DeserializeObject<ConnectionDto>(responseFromServer);
+                return JsonConvert.DeserializeObject<ConnectionDto>(responseFromServer, new JsonSerializerSettings
+                {
+                    Culture = CultureInfo.InvariantCulture
+                });
             }
             return null;
         }
