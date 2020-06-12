@@ -5,6 +5,10 @@ a {
   color: #0366d6;
 }
 
+li {
+  list-style-type: none;
+}
+
 code {
   color: #e01a76;
 }
@@ -42,10 +46,36 @@ code {
 }
 
 .table {
+  width: inherit;
+}
+
+.li {
   border: 1px solid blue;
+  width: auto;
+}
+
+.thead {
+  width: inherit;
 }
 
 .th {
   background-color: blue;
   color: white;
+  position: relative;
+  width: 20%;
 }
+
+.tbod {
+  width: inherit;
+}
+
+.tr {
+  width: inherit;
+}
+
+.td {
+  position: relative;
+  width: 20%;
+}
+
+

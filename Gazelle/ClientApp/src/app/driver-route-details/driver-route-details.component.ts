@@ -12,4 +12,5 @@ export class DriverRouteDetailsComponent implements OnInit {
   ngOnInit() {
   }
 
+
 }
