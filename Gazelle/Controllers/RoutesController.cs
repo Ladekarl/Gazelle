@@ -32,6 +32,14 @@ namespace Gazelle.Controllers
             public string Company;
         }
 
+        public class ConnectionComparisonDto
+        {
+            public int? Price { get; set; }
+            public int? Time { get; set; }
+            public string Origin { get; set; }
+            public string Destination { get; set; }
+        }
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Route>>> Get(string origin, string destination, int weight, int length, int height, int depth, string deliveryTypes)
         {
@@ -44,8 +52,8 @@ namespace Gazelle.Controllers
             var cheapestRoute = await CalculateCheapestRoute(origin, destination, c =>
             {
                 var prices = new List<ComparisonDto>();
-                var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", origin, destination, weight, length, height, depth, deliveryTypes);
-                var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", origin, destination, weight, length, height, depth, deliveryTypes);
+                var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", c.Origin, c.Destination, weight, length, height, depth, deliveryTypes);
+                var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", c.Origin, c.Destination, weight, length, height, depth, deliveryTypes);
 
                 if (eastIndia != null)
                 {
@@ -73,10 +81,11 @@ namespace Gazelle.Controllers
                         Company = "Telstar"
                     });
                 }
-
-                var min = prices.Min(c => c.Value);
-                cheapestCompaniesUsed.Add(prices.First(c => c.Value == min).Company);
-                return min;
+                if(prices.Count() > 0)
+                {
+                    return prices.Min(c => c.Value);
+                }
+                return 10000;
             }, deliveryTypes);
 
             var shortestCompaniesUsed = new List<string>();
@@ -127,9 +136,11 @@ namespace Gazelle.Controllers
                     });
                 }
 
-                var min = times.Min(c => c.Value);
-                shortestCompaniesUsed.Add(times.First(c => c.Value == min).Company);
-                return min;
+                if (times.Count() > 0)
+                {
+                    return times.Min(c => c.Value);
+                }
+                return 10000;
             }, deliveryTypes);
 
             if (cheapestRoute == null || shortestRoute == null)
@@ -143,7 +154,7 @@ namespace Gazelle.Controllers
             return new List<Route> { cheapestRoute, shortestRoute };
         }
 
-        private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
+        private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes)
         {
             var connections = await _context.Connections
                 .Include(c => c.StartCity).ThenInclude(c => c.Country)
@@ -222,7 +233,7 @@ namespace Gazelle.Controllers
             return route;
         }
 
-        private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
+        private async Task<Route> CalculateShortestRoute(string origin, string destination, Func<ConnectionComparisonDto, int> comparison, string deliveryTypes)
         {
             var connections = await _context.Connections.ToListAsync();
             var result = await CalculateRoute(origin, destination, connections, comparison);
@@ -252,7 +263,7 @@ namespace Gazelle.Controllers
             return null;
         }
 
-        private async Task<ShortestPathResult> CalculateRoute(string origin, string destination, IEnumerable<Connection> connections, Func<ConnectionDto, int> comparison)
+        private async Task<ShortestPathResult> CalculateRoute(string origin, string destination, IEnumerable<Connection> connections, Func<ConnectionComparisonDto, int> comparison)
         {
             var graph = new Graph<int, int>();
 
@@ -269,10 +280,12 @@ namespace Gazelle.Controllers
 
             foreach (var connection in connections)
             {
-                var connectionDto = new ConnectionDto
+                var connectionDto = new ConnectionComparisonDto
                 {
                     Price = connection.Price,
-                    Time = connection.Time
+                    Time = connection.Time,
+                    Origin = connection.StartCity.CityName,
+                    Destination = connection.EndCity.CityName
                 };
                 graph.Connect((uint)connection.StartCity.CityId, (uint)connection.EndCity.CityId, comparison(connectionDto), connection.ConnectionId);
             }
