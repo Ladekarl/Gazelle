@@ -38,56 +38,56 @@
             <div class="col">
               Dybde:
             </div>
-          <div class="col">
-            <input [(ngModel)]="depth" name="depth" id="depthBox" type="number" min="0">
+            <div class="col">
+              <input [(ngModel)]="depth" name="depth" id="depthBox" type="number" min="0">
+            </div>
           </div>
+          <div class="row">
+            <div class="col">
+              Højde:
+            </div>
+            <div class="col">
+              <input [(ngModel)]="height" name="height" id="heightBox" type="number" min="0">
+            </div>
           </div>
+
+
+          <div class="container">
             <div class="row">
               <div class="col">
-                Højde:
+                Special leverance:
+              </div>
+            </div>
+            <div>
+              <div class="col">
+                <input [(ngModel)]="recordedDelivery" name="recordedDelivery" type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
+              </div>
+
+              <div class="col">
+                <input [(ngModel)]="fragile" name="fragile" type="checkbox" id="FragileCheckbox"> Skrøbelig
               </div>
               <div class="col">
-                <input [(ngModel)]="height" name="height" id="heightBox" type="number" min="0">
+                <input [(ngModel)]="frozen" name="frozen" type="checkbox" id="frozenCheckbox"> Frys
+              </div>
+              <div class="col">
+                <input [(ngModel)]="animal" name="animal" type="checkbox" id="animalCheckbox"> Dyr
+              </div>
+              <div class="col">
+                <input type="checkbox" id="ConflictZoneCheckbox"> Konfliktramt
               </div>
             </div>
+          </div>
 
-
-            <div class="container">
-              <div class="row">
-                <div class="col">
-                  Special leverance:
-                </div>
-              </div>
-              <div>
-                <div class="col">
-                  <input [(ngModel)]="recordedDelivery" name="recordedDelivery" type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
-                </div>
-
-                <div class="col">
-                  <input [(ngModel)]="fragile" name="fragile" type="checkbox" id="FragileCheckbox"> Skrøbelig
-                </div>
-                <div class="col">
-                  <input [(ngModel)]="frozen" name="frozen" type="checkbox" id="frozenCheckbox"> Frys
-                </div>
-                <div class="col">
-                  <input [(ngModel)]="animal" name="animal" type="checkbox" id="animalCheckbox"> Dyr
-                </div>
-                <div class="col">
-                  <input type="checkbox" id="ConflictZoneCheckbox"> Konfliktramt
-                </div>
-              </div>
-            </div>
-
-            <div class="container">
-              <label for="city">Fra by:</label>
-              <select [(ngModel)]="origin" name="options" required>
-                <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
-              </select>
-              <label for="city">Til by:</label>
-              <select [(ngModel)]="destination" name="options" required>
-                <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
-              </select>
-            </div>
+          <div class="container">
+            <label for="city">Fra by:</label>
+            <select [(ngModel)]="origin" name="options" required>
+              <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
+            </select>
+            <label for="city">Til by:</label>
+            <select [(ngModel)]="destination" name="options" required>
+              <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
+            </select>
+          </div>
         </form>
       </div>
     </div>
@@ -97,10 +97,35 @@
       <button (click)="showRoutes()"> Vis ruter </button>
     </div>
 
-    <div class="container">
-      <li *ngFor="let route of routes">
-        <a>Pris: {{route.price}}</a> Tid: {{route.time}} <button (click)="onSelect(route)">Vælg rute</button>
-      </li>
-    </div>
+    
+  <div class="container">
+    <li *ngFor="let route of routes">
+      <a>Pris: {{route.price}}</a> Tid: {{route.time}}  <button (click)="onSelect(route)">Vælg rute</button>
+    </li>
+  </div>
+  <!---
+
+  <li class="table">
+    <thead class="thead">
+    <tr>
+      <th class="th">Start by</th>
+      <th class="th">Destinations by</th>
+      <th class="th">Tidsestimate</th>
+      <th class="th"> Pris</th>
+      <th class="th">Godkend</th>
+    </tr>
+    </thead>
+    <tbody class="tbod">
+    <tr class="tr" *ngFor="let route of routes">
+      <td class="td"> {{route.startCity.cityName}}  </td>
+      <td class="td"> {{route.endCity.cityName}} </td>
+      <td class="td"> {{route.price}} US dollars </td>
+      <td class="td"> {{route.time}} timer </td>
+      <td class="td"> <button (click)="onSelect(route)">Vælg rute</button> </td>
+    </tr>
+    </tbody>
+  </li>
+    --->
+
   </div>
 </div>
