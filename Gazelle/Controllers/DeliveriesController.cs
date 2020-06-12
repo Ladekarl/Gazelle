@@ -26,7 +26,10 @@ namespace Gazelle.Controllers
 
         public class ApproveDeliveryModel
         {
-            public int DeliveryId { get; set; }
+            public double DriverId { get; set; }
+            public double Weight { get; set; }
+            public string StartCity { get; set; }
+            public string EndCity { get; set; }
             public int ApprovedRouteId { get; set; }
         }
 
@@ -36,90 +39,28 @@ namespace Gazelle.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Delivery>>> Get()
+        public async Task<ActionResult<IEnumerable<Delivery>>> Get()
         {
-            List<Delivery> deliveryList = new List<Delivery>();
-
-            deliveryList.Add(new Delivery
-            {
-                DeliveryId = 1,
-                DriverId = 2,
-                Weight = 35,
-                DeliveryType = new DeliveryType
-                {
-                    DeliveryTypeId = 1,
-                    Name = "frozen",
-                    Price = 40
-                },
-                StartCity = _context.Cities.ToList().First(),
-                EndCity = _context.Cities.ToList().Last(),
-                Length = 40,
-                ApprovedRoute = new Route
-                {
-                    RouteId = 1,
-                    Price = 40,
-                    Time = 50,
-                    Companies = "Telstar",
-                    Connections = new List<Connection>
-                    {
-                         new Connection
-                        {
-                            ConnectionId = 1,
-                            Price = 40,
-                            Time = 40,
-                            Company = "Telstar",
-                            StartCity = _context.Cities.ToList().First(),
-                            EndCity = _context.Cities.ToList().Last()
-                        }
-                    }
-                },
-                Routes = new List<Route>
-                {
-                    new Route
-                    {
-                        RouteId = 1,
-                        Price = 40,
-                        Time = 50,
-                        Companies = "Telstar",
-                        Connections = new List<Connection>
-                        {
-                             new Connection
-                            {
-                                ConnectionId = 1,
-                                Price = 40,
-                                Time = 40,
-                                Company = "Telstar",
-                                StartCity = _context.Cities.ToList().First(),
-                                EndCity = _context.Cities.ToList().Last()
-                            }
-                        }
-                    }
-                }
-            });
-            return Ok(deliveryList);
-            //return await _context.Deliveries.ToListAsync();
+            return await _context.Deliveries
+                .Include(d => d.StartCity)
+                .Include(d => d.EndCity)
+                .Include(d => d.ApprovedRoute)
+                .ToListAsync();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Delivery>> ApproveDelivery([FromBody] ApproveDeliveryModel approveDeliveryModel)
+        public async Task<ActionResult<Delivery>> Post([FromBody] ApproveDeliveryModel approveDeliveryModel)
         {
-            var delivery = await _context.Deliveries
-                .Include(x => x.Routes)
-                .FirstOrDefaultAsync(x => x.DeliveryId == approveDeliveryModel.DeliveryId);
-
-            if (delivery == null)
+            var delivery = new Delivery
             {
-                return NotFound();
-            }
+                DriverId = approveDeliveryModel.DriverId,
+                Weight = approveDeliveryModel.Weight,
+                StartCity = _context.Cities.First(c => c.CityName == approveDeliveryModel.StartCity),
+                EndCity = _context.Cities.First(c => c.CityName == approveDeliveryModel.EndCity),
+                ApprovedRoute = _context.Routes.First(a => a.RouteId == approveDeliveryModel.ApprovedRouteId)
+            };
 
-            var approvedRoute = delivery.Routes.FirstOrDefault(x => x.RouteId == approveDeliveryModel.ApprovedRouteId);
-
-            if (approvedRoute == null)
-            {
-                return NotFound();
-            }
-
-            delivery.ApprovedRoute = approvedRoute;
+            _context.Deliveries.Add(delivery);
 
             await _context.SaveChangesAsync();
 

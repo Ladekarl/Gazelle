@@ -5,79 +5,95 @@
     <div class="grid-item"> <h1 align="center"> Opret Forsendelse</h1></div>
   </div>
 
-<div class="container">
-  <div class="row">
+  <div class="container">
     <div class="row">
-    </div>
-    <h3 align="left"> Udfyld pakke information </h3>
-
-
-  </div>
-
-  <div class="form-group">
-    <form [formGroup]="form" (ngSubmit)="submit()">
-
       <div class="row">
-        <div class="col">
-          Vægt:
-        </div>
-        <div class="col">
-          <input type="number" #weigth min="0" max="40">
-        </div>
-        <div class="col">
-        </div>
-        <div class="col">
-        </div>
-        <div class="col">
-        </div>
       </div>
+      <h3 align="left"> Udfyld pakke information </h3>
 
-      <div class="container">
+
+    </div>
+
+    <div class="form-group">
+      <form (ngSubmit)="submit()">
+
         <div class="row">
           <div class="col">
-            Special leverance:
-          </div>
-        </div>
-        <div>
-          <div class="col">
-            <input type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
-          </div>
-
-          <div class="col">
-            <input type="checkbox" id="FragileCheckbox"> Skrøbelig
+            Vægt:
           </div>
           <div class="col">
-            <input type="checkbox" id="frozenCheckbox"> Frys
+            <input [(ngModel)]="weight" name="weight" id="WeightBox" type="number" #weigth min="0" max="40">
           </div>
           <div class="col">
-            <input type="checkbox" id="animalCheckbox"> Dyr
+            Længde:
+          </div>
+          <div class="col">
+            <input [(ngModel)]="length" name="length" id="lengthBox" type="number" #weigth min="0">
+          </div>
+          <div class="col">
+            Dybde:
+          </div>
+          <div class="col">
+            <input [(ngModel)]="depth" name="depth" id="depthBox" type="number" #weigth min="0">
+          </div>
+          <div class="col">
+            Højde:
+          </div>
+          <div class="col">
+            <input [(ngModel)]="height" name="height" id="heightBox" type="number" #weigth min="0">
           </div>
           <div class="col">
             <input type="checkbox" id="ConflictZoneCheckbox"> Konfliktramt
           </div>
         </div>
-      </div>
 
-      <div class="container">
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              Special leverance:
+            </div>
+          </div>
+          <div>
+            <div class="col">
+              <input [(ngModel)]="recordedDelivery" name="recordedDelivery" type="checkbox" id="recodedDeliveryCheckbox"> Rekommenderet
+            </div>
 
-        <label for="city">Fra by:</label>
-        <select ng-model="cities" formControlName="city" name="options" required>
-          <option *ngFor="let city of cities" [ngValue]="city"></option>
-        </select>
-        <label for="city">Til by:</label>
-        <select ng-model="cities" formControlName="city" name="options" required>
-          <option *ngFor="let city of cities" [ngValue]="city"></option>
-        </select>
+            <div class="col">
+              <input [(ngModel)]="fragile" name="fragile" type="checkbox" id="FragileCheckbox"> Skrøbelig
+            </div>
+            <div class="col">
+              <input [(ngModel)]="frozen" name="frozen" type="checkbox" id="frozenCheckbox"> Frys
+            </div>
+            <div class="col">
+              <input [(ngModel)]="animal" name="animal" type="checkbox" id="animalCheckbox"> Dyr
+            </div>
+          </div>
+        </div>
 
-      </div>
-    </form>
+        <div class="container">
+
+          <label for="city">Fra by:</label>
+          <select [(ngModel)]="origin" name="options" required>
+            <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
+          </select>
+          <label for="city">Til by:</label>
+          <select [(ngModel)]="destination" name="options" required>
+            <option *ngFor="let city of cities" [ngValue]="city">{{city.cityName}}</option>
+          </select>
+
+        </div>
+      </form>
+    </div>
+
+
+    <div>
+      <button (click)="showRoutes()"> Vis ruter </button>
+    </div>
+
+    <div class="container">
+      <li *ngFor="let route of routes">
+        <a>Pris: {{route.price}}</a> Tid: {{route.time}} <button (click)="onSelect(route)">Vælg rute</button>
+      </li>
+    </div>
   </div>
-
-
-  <div>
-    <button (click)="showRoutes"> Vis ruter </button>
-
-
-  </div>
-</div>
 </div>
