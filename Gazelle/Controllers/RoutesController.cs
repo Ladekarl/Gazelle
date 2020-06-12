@@ -51,7 +51,7 @@ namespace Gazelle.Controllers
                 {
                     prices.Add(new ComparisonDto
                     {
-                        Value = eastIndia.Price,
+                        Value = eastIndia.Price.Value,
                         Company = "East India"
                     });
                 }
@@ -60,16 +60,19 @@ namespace Gazelle.Controllers
                 {
                     prices.Add(new ComparisonDto
                     {
-                        Value = oceanic.Price,
+                        Value = oceanic.Price.Value,
                         Company = "Oceanic"
                     });
                 }
 
-                prices.Add(new ComparisonDto
+                if(c.Price.HasValue)
                 {
-                    Value = c.Price,
-                    Company = "Telstar"
-                });
+                    prices.Add(new ComparisonDto
+                    {
+                        Value = c.Price.Value,
+                        Company = "Telstar"
+                    });
+                }
 
                 var min = prices.Min(c => c.Value);
                 cheapestCompaniesUsed.Add(prices.First(c => c.Value == min).Company);
@@ -85,14 +88,16 @@ namespace Gazelle.Controllers
                 try
                 {
                     eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", origin, destination, weight, length, height, depth, deliveryTypes);
-                } catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     //Ignored
                 };
                 try
                 {
                     oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", origin, destination, weight, length, height, depth, deliveryTypes);
-                } catch(Exception ex)
+                }
+                catch (Exception ex)
                 {
                     //Ignored
                 }
@@ -100,7 +105,7 @@ namespace Gazelle.Controllers
                 {
                     times.Add(new ComparisonDto
                     {
-                        Value = eastIndia.Time,
+                        Value = eastIndia.Time.Value,
                         Company = "East India"
                     });
                 }
@@ -109,16 +114,18 @@ namespace Gazelle.Controllers
                 {
                     times.Add(new ComparisonDto
                     {
-                        Value = oceanic.Time,
+                        Value = oceanic.Time.Value,
                         Company = "Oceanic"
                     });
                 }
-
-                times.Add(new ComparisonDto
+                if(c.Time.HasValue)
                 {
-                    Value = c.Time,
-                    Company = "Telstar"
-                });
+                    times.Add(new ComparisonDto
+                    {
+                        Value = c.Time.Value,
+                        Company = "Telstar"
+                    });
+                }
 
                 var min = times.Min(c => c.Value);
                 shortestCompaniesUsed.Add(times.First(c => c.Value == min).Company);
@@ -130,12 +137,18 @@ namespace Gazelle.Controllers
                 return NotFound();
             }
 
+            cheapestRoute.Connections = null;
+            shortestRoute.Connections = null;
+
             return new List<Route> { cheapestRoute, shortestRoute };
         }
 
         private async Task<Route> CalculateCheapestRoute(string origin, string destination, Func<ConnectionDto, int> comparison, string deliveryTypes)
         {
-            var connections = await _context.Connections.ToListAsync();
+            var connections = await _context.Connections
+                .Include(c => c.StartCity).ThenInclude(c => c.Country)
+                .Include(c => c.EndCity).ThenInclude(c => c.Country)
+                .ToListAsync();
             var result = await CalculateRoute(origin, destination, connections, comparison);
             var path = result.GetPath();
             if (path.Count() >= 2)
@@ -150,7 +163,6 @@ namespace Gazelle.Controllers
         {
             var resultConnections = new List<Connection>();
             var path = result.GetPath();
-
             for (int i = 1; i < path.Count(); i++)
             {
                 var firstElement = path.ElementAt(i - 1);
@@ -159,14 +171,16 @@ namespace Gazelle.Controllers
                     .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement)
                     .OrderBy(c => c.Price)
                     .FirstOrDefault();
-                if(edgeConnection != null)
+                if (edgeConnection != null)
                 {
                     resultConnections.Add(edgeConnection);
                 }
             }
 
-            var calcPrice = resultConnections.Sum(c => c.Price);
-            var calcTime = resultConnections.Sum(c => c.Time);
+            bool hasWar = resultConnections.Any(c => c.EndCity.Country.Conflict || c.StartCity.Country.Conflict);
+
+            var calcPrice = resultConnections.Where(c => c.Price.HasValue).Sum(c => c.Price.Value);
+            var calcTime = resultConnections.Where(c => c.Time.HasValue).Sum(c => c.Time.Value);
 
             var sentTypes = new List<DeliveryType>();
 
@@ -176,11 +190,20 @@ namespace Gazelle.Controllers
 
                 foreach (var deliveryType in deliveryTypesArray)
                 {
-                    if(!string.IsNullOrEmpty(deliveryType))
+                    if (!string.IsNullOrEmpty(deliveryType))
                     {
                         var dbType = _context.DeliveryTypes.First(x => x.Name == deliveryType);
                         sentTypes.Add(dbType);
                     }
+                }
+            }
+
+            if (hasWar)
+            {
+                var warDelivery = _context.DeliveryTypes.First(x => x.Name == "war");
+                if(!sentTypes.Contains(warDelivery))
+                {
+                    sentTypes.Add(warDelivery);
                 }
             }
 
@@ -206,7 +229,7 @@ namespace Gazelle.Controllers
             var path = result.GetPath();
             if (path.Count() >= 2)
             {
-                return await GetRouteFromPath(result, connections, deliveryTypes, false);
+                return await GetRouteFromPath(result, connections, deliveryTypes, true);
             }
 
             return null;
@@ -217,7 +240,7 @@ namespace Gazelle.Controllers
             WebRequest request = WebRequest.Create(string.Format("{0}?origin={1}&destination={2}&weight={3}&length={4}&height={5}&depth={6}&deliveryTypes={7}", url, origin, destination, weight, length, height, depth, deliveryTypes));
             request.Method = "GET";
 
-            HttpWebResponse response = ((HttpWebRequest) request).GetResponseNoException();
+            HttpWebResponse response = ((HttpWebRequest)request).GetResponseNoException();
 
             if (response != null && response.StatusDescription == "OK")
             {

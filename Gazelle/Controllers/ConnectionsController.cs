@@ -20,8 +20,8 @@ namespace Gazelle.Controllers
 
         public class ConnectionDto
         {
-            public int Price { get; set; }
-            public int Time { get; set; }
+            public int? Price { get; set; }
+            public int? Time { get; set; }
         }
 
         public ConnectionsController(GazelleContext context)
@@ -68,7 +68,8 @@ namespace Gazelle.Controllers
                 .Include(x => x.EndCity)
                 .FirstOrDefaultAsync(x =>
                 x.StartCity.CityName.ToLower() == fromCityInvariant &&
-                x.EndCity.CityName.ToLower() == toCityInvariant);
+                x.EndCity.CityName.ToLower() == toCityInvariant &&
+                x.Company == "Telstar");
 
             if (connection == null)
             {
@@ -79,8 +80,8 @@ namespace Gazelle.Controllers
 
             var conn = new ConnectionDto
             {
-                Price = connection.Price + (connection.Price * (totalPriceAddition / 100)),
-                Time = connection.Time 
+                Price = connection.Price.Value + (connection.Price.Value * (totalPriceAddition / 100)),
+                Time = connection.Time.Value
             };
 
             return Ok(conn);
