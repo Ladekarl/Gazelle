@@ -74,7 +74,7 @@ namespace Gazelle.Controllers
                     });
                 }
 
-                if(c.Price.HasValue)
+                if (c.Price.HasValue)
                 {
                     prices.Add(new ComparisonDto
                     {
@@ -82,7 +82,7 @@ namespace Gazelle.Controllers
                         Company = "Telstar"
                     });
                 }
-                if(prices.Count() > 0)
+                if (prices.Count() > 0)
                 {
                     return prices.Min(c => c.Value);
                 }
@@ -124,11 +124,11 @@ namespace Gazelle.Controllers
                 {
                     times.Add(new ComparisonDto
                     {
-                        Value =  Convert.ToInt32(oceanic.Time.Value),
+                        Value = Convert.ToInt32(oceanic.Time.Value),
                         Company = "Oceanic"
                     });
                 }
-                if(c.Time.HasValue)
+                if (c.Time.HasValue)
                 {
                     times.Add(new ComparisonDto
                     {
@@ -179,45 +179,59 @@ namespace Gazelle.Controllers
             {
                 var firstElement = path.ElementAt(i - 1);
                 var secondElement = path.ElementAt(i);
-                var edgeConnection = connections
+                var edgeConnections = connections
                     .Where(c => c.StartCity.CityId == firstElement && c.EndCity.CityId == secondElement)
                     .OrderBy(c => c.Price)
-                    .FirstOrDefault();
+                    .ToList();
 
-                if (edgeConnection != null)
+                foreach (var edgeConnection in edgeConnections)
                 {
-                    if(!edgeConnection.Price.HasValue)
-                    {
-                        var firstElementName = _context.Cities.Find(Convert.ToInt32(firstElement));
-                        var secondElementName = _context.Cities.Find(Convert.ToInt32(secondElement));
-                        var elements = new List<ConnectionDto>();
-                        var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", firstElementName.CityName, secondElementName.CityName, weight, length, height, depth, deliveryTypes);
-                        var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", firstElementName.CityName, secondElementName.CityName, weight, length, height, depth, deliveryTypes);
-                        if(eastIndia != null)
-                        {
-                            elements.Add(eastIndia);
-                        }
-                        if(oceanic != null)
-                        {
-                            elements.Add(oceanic);
-                        }
-                        if(elements.Count > 0)
-                        {
-                            if(isTime)
-                            {
-                                elements.OrderBy(c => c.Time);
-                            } else
-                            {
-                                elements.OrderBy(c => c.Price);
-                            }
-                            var first = elements.First();
-                            edgeConnection.Price = Convert.ToInt32(first.Price);
-                            edgeConnection.Time = Convert.ToInt32(first.Time);
-                        }
-                    }
 
-                    resultConnections.Add(edgeConnection);
+                    var firstElementName = _context.Cities.Find(Convert.ToInt32(firstElement));
+                    var secondElementName = _context.Cities.Find(Convert.ToInt32(secondElement));
+                    var elements = new List<ConnectionDto>();
+                    var eastIndia = GetFromRemote("http://wa-eitdk.azurewebsites.net/api/getshippinginfo", firstElementName.CityName, secondElementName.CityName, weight, length, height, depth, deliveryTypes);
+                    var oceanic = GetFromRemote("http://wa-oadk.azurewebsites.net/api/routeApi", firstElementName.CityName, secondElementName.CityName, weight, length, height, depth, deliveryTypes);
+                    if (eastIndia != null)
+                    {
+                        elements.Add(eastIndia);
+                    }
+                    if (oceanic != null)
+                    {
+                        elements.Add(oceanic);
+                    }
+                    elements.Add(new ConnectionDto
+                    {
+                        Price = edgeConnection.Price,
+                        Time = edgeConnection.Time
+                    });
+                    if (elements.Count > 0)
+                    {
+                        if (isTime)
+                        {
+                            elements.OrderBy(c => c.Time);
+                        }
+                        else
+                        {
+                            elements.OrderBy(c => c.Price);
+                        }
+                        var first = elements.Where(c=> c.Price > 0 && c.Time > 0).First();
+                        edgeConnection.Price = Convert.ToInt32(first.Price);
+                        edgeConnection.Time = Convert.ToInt32(first.Time);
+                    }
                 }
+
+                if (isTime)
+                {
+                    edgeConnections.OrderBy(c => c.Time);
+                }
+                else
+                {
+                    edgeConnections.OrderBy(c => c.Price);
+                }
+                var firstEdge = edgeConnections.Where(c => c.Price > 0 && c.Time > 0).First();
+
+                resultConnections.Add(firstEdge);
             }
 
             bool hasWar = resultConnections.Any(c => c.EndCity.Country.Conflict || c.StartCity.Country.Conflict);
@@ -244,7 +258,7 @@ namespace Gazelle.Controllers
             if (hasWar)
             {
                 var warDelivery = _context.DeliveryTypes.First(x => x.Name == "war");
-                if(!sentTypes.Contains(warDelivery))
+                if (!sentTypes.Contains(warDelivery))
                 {
                     sentTypes.Add(warDelivery);
                 }
